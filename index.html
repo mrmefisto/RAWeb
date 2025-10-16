@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
+  <title>RA educativa — Demo multi-marcador (A-Frame + AR.js)</title>
+  <!-- CARGA EN LÍNEA (CDN). Para uso sin internet, ver README_LMS.txt -->
+  <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.3.2/aframe/build/aframe-ar-nft.js"></script>
+  <style>
+    html, body { margin:0; padding:0; overflow:hidden; background:#0b132b; color:#e0e0e0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif; }
+    #hud {
+      position: fixed; top: 0; left: 0; right: 0; 
+      display: flex; gap: .5rem; align-items: center; padding: .5rem .75rem;
+      background: rgba(0,0,0,.35); backdrop-filter: blur(4px);
+      z-index: 5; font-size: 14px;
+    }
+    #hud .badge { padding: .2rem .5rem; border-radius: 999px; background: #263159; }
+    #hud button { border: 0; padding: .5rem .7rem; border-radius: .6rem; cursor: pointer; background:#1c2541; color:#fff; }
+    #hud button:hover { filter: brightness(1.15); }
+    #msg {
+      position: fixed; bottom: .5rem; left: .5rem; right: .5rem;
+      background: rgba(0,0,0,.5); padding: .6rem .8rem; border-radius: .6rem; z-index: 5;
+      font-size: 13px; line-height: 1.35;
+    }
+    #fallback {
+      position: fixed; inset: 0; display: none; place-items: center; text-align: center; padding: 1rem;
+      background: #0b132b; color: #e0e0e0; z-index: 10;
+    }
+    #fallback a { color: #9ad0f5; }
+    .legend {
+      position: fixed; right: .5rem; bottom: .5rem; background: rgba(0,0,0,.35);
+      padding: .5rem .6rem; border-radius: .6rem; z-index: 5; font-size: 12px;
+    }
+    .legend b { color: #9ad0f5; }
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <span class="badge">RA educativa · demo multi-marcador</span>
+    <button id="btnSnap" title="Descargar captura">📸 Capturar</button>
+    <button id="btnHelp" title="Ayuda rápida">❓ Ayuda</button>
+    <span style="margin-left:auto"></span>
+    <span>Marcadores: <b>hiro</b> (yaguareté), <b>kanji</b> (carpincho)</span>
+  </div>
+
+  <div id="fallback">
+    <div>
+      <h2>Necesitamos acceso a la cámara</h2>
+      <p>Activalo y recarga la página. Si estás en un aula virtual, abrí este recurso en una nueva pestaña.</p>
+      <p>Como alternativa, podés usar <a href="https://artoolkit.org/documentation/" target="_blank" rel="noopener">marcadores impresos</a> y un navegador compatible.</p>
+    </div>
+  </div>
+
+  <div id="msg">Apuntá con la cámara a los marcadores impresos: <b>hiro</b> y <b>kanji</b>. Usamos modelos simples para que puedas reemplazarlos por animales 3D (GLB/GLTF) luego.</div>
+  <div class="legend">
+    <div><b>hiro = “Yasi” (yaguareté)</b> → cubo amarillo + texto</div>
+    <div><b>kanji = “Capy” (carpincho)</b> → cilindro marrón + texto</div>
+  </div>
+
+  <!-- ESCENA AR -->
+  <a-scene 
+    vr-mode-ui="enabled: false"
+    renderer="antialias: true; alpha: true; precision: mediump"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+  >
+    <!-- Luz suave para modelos GLTF futuros -->
+    <a-entity light="type: ambient; color: #BBB"></a-entity>
+    <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="0 1 1"></a-entity>
+
+    <!-- Marcador 1: preset hiro (yaguareté) -->
+    <!-- Marcador 1: preset hiro (yaguareté) -->
+<a-marker preset="hiro">
+  <a-gltf-model src="assets/jaguar.glb" 
+                position="0 0 0" 
+                scale="0.5 0.5 0.5" 
+                rotation="0 180 0"></a-gltf-model>
+  <a-entity position="0 1.2 0" text="value: Yasi · yaguareté; color: #fff; align: center; width: 2;"></a-entity>
+</a-marker>
+
+<!-- Marcador 2: preset kanji (capibara) -->
+<a-marker preset="kanji">
+  <a-gltf-model src="assets/capybara_low_poly.glb" 
+                position="0 0 0" 
+                scale="0.5 0.5 0.5" 
+                rotation="0 180 0"></a-gltf-model>
+  <a-entity position="0 1.4 0" text="value: Capy · capibara; color: #fff; align: center; width: 2;"></a-entity>
+</a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+  // Pequeña ayuda en runtime
+  document.getElementById('btnHelp').addEventListener('click', () => {
+    alert([
+      '1) Imprimí los marcadores "hiro" y "kanji" (buscá: "AR.js hiro marker" y "AR.js kanji marker").',
+      '2) Autorizá la cámara del navegador.',
+      '3) Apuntá los marcadores: verás modelos simples que podés reemplazar por GLB/GLTF en la carpeta assets.',
+      '4) Usá 📸 para descargar una captura del canvas.'
+    ].join('\n'));
+  });
+
+  // Captura del canvas (descarga PNG)
+  document.getElementById('btnSnap').addEventListener('click', () => {
+    try {
+      const canvases = document.getElementsByTagName('canvas');
+      if (!canvases.length) throw new Error('Canvas no encontrado aún. Esperá unos segundos.');
+      const canvas = canvases[0];
+      const url = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'captura_ra.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (e) {
+      alert('No pudimos capturar la imagen: ' + e.message);
+    }
+  });
+
+  // Si no hay cámara o permisos, mostramos fallback
+  (function waitForCamera(){
+    setTimeout(() => {
+      const hasVideo = !!document.querySelector('video');
+      if (!hasVideo) {
+        document.getElementById('fallback').style.display = 'grid';
+        document.getElementById('msg').textContent = 'No se detectó la cámara. Verificá permisos o probá en otro navegador.';
+      }
+    }, 4000);
+  })();
+  </script>
+</body>
+</html>
