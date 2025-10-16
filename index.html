@@ -9,7 +9,22 @@
  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-
+  <style>
+    html, body { margin:0; padding:0; overflow:hidden; background:#0b132c; color:#e0e0e7; font-family:system-ui; }
+    #hud { position: fixed; top: 0; left: 0; right: 0;
+      display: flex; gap: .5rem; align-items: center; padding: .5rem .75rem;
+      background: rgba(0,0,0,.35); backdrop-filter: blur(4px); z-index: 5; font-size: 14px; }
+    #hud .badge { padding: .2rem .5rem; border-radius: 999px; background: #263159; }
+    #hud button { border: 0; padding: .5rem .7rem; border-radius: .6rem; cursor: pointer; background:#1c2541; color:#fff; }
+    #hud button:hover { filter: brightness(1.15); }
+    #msg { position: fixed; bottom: .5rem; left: .5rem; right: .5rem;
+      background: rgba(0,0,0,.5); padding: .6rem .8rem; border-radius: .6rem; z-index: 5;
+      font-size: 13px; line-height: 1.35; }
+    #fallback { position: fixed; inset: 0; display: none; place-items: center; text-align: center; padding: 1rem;
+      background: #0b132b; color: #e0e0e0; z-index: 10; }
+    .legend { position: fixed; right: .5rem; bottom: .5rem; background: rgba(0,0,0,.35);
+      padding: .5rem .6rem; border-radius: .6rem; z-index: 5; font-size: 12px; }
+  </style>
 </head>
 <body>
   <div id="hud">
@@ -73,58 +88,29 @@
       } catch (e) { alert('Error al capturar: ' + e.message); }
     });
 
-// Ayuda interactiva
-document.getElementById('btnHelp').addEventListener('click', () => {
-  alert('1) Imprimí los marcadores hiro y kanji.\n2) Permití la cámara.\n3) Apuntá los marcadores.\n4) Usá 📸 para guardar una captura.');
-});
+    // Activar cámara manualmente si AR.js no lo hace
+    setTimeout(async () => {
+      const video = document.querySelector('video');
+      if (!video) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const v = document.createElement('video');
+          v.srcObject = stream;
+          v.play();
+          console.log('✅ Cámara inicializada manualmente.');
+        } catch (err) {
+          document.getElementById('fallback').style.display = 'grid';
+          document.getElementById('msg').textContent = 'No se pudo abrir la cámara: ' + err.message;
+        }
+      }
+    }, 3000);
 
-// Captura de pantalla
-document.getElementById('btnSnap').addEventListener('click', () => {
-  try {
-    const canvas = document.querySelector('canvas');
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = 'captura_ra.png';
-    a.click();
-  } catch (e) {
-    alert('Error al capturar: ' + e.message);
-  }
-});
-
-// Activar cámara manualmente si AR.js no lo hace
-setTimeout(async () => {
-  const video = document.querySelector('video');
-  if (!video) {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const v = document.createElement('video');
-      v.setAttribute('autoplay', '');
-      v.setAttribute('muted', '');
-      v.setAttribute('playsinline', '');
-      v.style.position = 'fixed';
-      v.style.bottom = '10px';
-      v.style.right = '10px';
-      v.style.width = '160px';
-      v.style.border = '2px solid #fff';
-      v.style.zIndex = '999';
-      v.srcObject = stream;
-      document.body.appendChild(v);
-      v.play();
-      console.log('✅ Cámara inicializada manualmente y agregada al DOM.');
-    } catch (err) {
-      document.getElementById('fallback').style.display = 'grid';
-      document.getElementById('msg').textContent = 'No se pudo abrir la cámara: ' + err.message;
-    }
-  }
-}, 3000);
-
-// Mostrar fallback si no aparece el video tras 10 s
-setTimeout(() => {
-  if (!document.querySelector('video')) {
-    document.getElementById('fallback').style.display = 'grid';
-  }
-}, 10000);
-</script>
-
+    // Mostrar fallback si no aparece el video tras 10 s
+    setTimeout(() => {
+      if (!document.querySelector('video')) {
+        document.getElementById('fallback').style.display = 'grid';
+      }
+    }, 10000);
+  </script>
 </body>
 </html>
