@@ -9,22 +9,7 @@
  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-  <style>
-    html, body { margin:0; padding:0; overflow:hidden; background:#0b132b; color:#e0e0e7; font-family:system-ui; }
-    #hud { position: fixed; top: 0; left: 0; right: 0;
-      display: flex; gap: .5rem; align-items: center; padding: .5rem .75rem;
-      background: rgba(0,0,0,.35); backdrop-filter: blur(4px); z-index: 5; font-size: 14px; }
-    #hud .badge { padding: .2rem .5rem; border-radius: 999px; background: #263159; }
-    #hud button { border: 0; padding: .5rem .7rem; border-radius: .6rem; cursor: pointer; background:#1c2541; color:#fff; }
-    #hud button:hover { filter: brightness(1.15); }
-    #msg { position: fixed; bottom: .5rem; left: .5rem; right: .5rem;
-      background: rgba(0,0,0,.5); padding: .6rem .8rem; border-radius: .6rem; z-index: 5;
-      font-size: 13px; line-height: 1.35; }
-    #fallback { position: fixed; inset: 0; display: none; place-items: center; text-align: center; padding: 1rem;
-      background: #0b132b; color: #e0e0e0; z-index: 10; }
-    .legend { position: fixed; right: .5rem; bottom: .5rem; background: rgba(0,0,0,.35);
-      padding: .5rem .6rem; border-radius: .6rem; z-index: 5; font-size: 12px; }
-  </style>
+
 </head>
 <body>
   <div id="hud">
