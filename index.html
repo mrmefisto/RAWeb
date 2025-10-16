@@ -50,7 +50,7 @@
 
   <!-- ESCENA -->
   <a-scene 
-    vr-mode-ui="enabled: true"
+    vr-mode-ui="enabled: false"
     renderer="antialias: true; alpha: true; precision: mediump"
     embedded
     arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
@@ -88,29 +88,58 @@
       } catch (e) { alert('Error al capturar: ' + e.message); }
     });
 
-    // Activar cámara manualmente si AR.js no lo hace
-    setTimeout(async () => {
-      const video = document.querySelector('video');
-      if (!video) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          const v = document.createElement('video');
-          v.srcObject = stream;
-          v.play();
-          console.log('✅ Cámara inicializada manualmente.');
-        } catch (err) {
-          document.getElementById('fallback').style.display = 'grid';
-          document.getElementById('msg').textContent = 'No se pudo abrir la cámara: ' + err.message;
-        }
-      }
-    }, 3000);
+// Ayuda interactiva
+document.getElementById('btnHelp').addEventListener('click', () => {
+  alert('1) Imprimí los marcadores hiro y kanji.\n2) Permití la cámara.\n3) Apuntá los marcadores.\n4) Usá 📸 para guardar una captura.');
+});
 
-    // Mostrar fallback si no aparece el video tras 10 s
-    setTimeout(() => {
-      if (!document.querySelector('video')) {
-        document.getElementById('fallback').style.display = 'grid';
-      }
-    }, 10000);
-  </script>
+// Captura de pantalla
+document.getElementById('btnSnap').addEventListener('click', () => {
+  try {
+    const canvas = document.querySelector('canvas');
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = 'captura_ra.png';
+    a.click();
+  } catch (e) {
+    alert('Error al capturar: ' + e.message);
+  }
+});
+
+// Activar cámara manualmente si AR.js no lo hace
+setTimeout(async () => {
+  const video = document.querySelector('video');
+  if (!video) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const v = document.createElement('video');
+      v.setAttribute('autoplay', '');
+      v.setAttribute('muted', '');
+      v.setAttribute('playsinline', '');
+      v.style.position = 'fixed';
+      v.style.bottom = '10px';
+      v.style.right = '10px';
+      v.style.width = '160px';
+      v.style.border = '2px solid #fff';
+      v.style.zIndex = '999';
+      v.srcObject = stream;
+      document.body.appendChild(v);
+      v.play();
+      console.log('✅ Cámara inicializada manualmente y agregada al DOM.');
+    } catch (err) {
+      document.getElementById('fallback').style.display = 'grid';
+      document.getElementById('msg').textContent = 'No se pudo abrir la cámara: ' + err.message;
+    }
+  }
+}, 3000);
+
+// Mostrar fallback si no aparece el video tras 10 s
+setTimeout(() => {
+  if (!document.querySelector('video')) {
+    document.getElementById('fallback').style.display = 'grid';
+  }
+}, 10000);
+</script>
+
 </body>
 </html>
