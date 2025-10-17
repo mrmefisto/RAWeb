@@ -2,17 +2,15 @@
 <html>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <!-- we import arjs version without NFT but with marker + location based support -->
-  <!-- <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script> -->
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-
   <body style="margin : 0px; overflow: hidden;">
     <a-scene embedded arjs>
       <a-marker preset="hiro">
         <a-entity
           position="0 0 0"
-          scale="0.05 0.05 0.05"
-          a-gltf-model src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf">
-        </a-gltf-model>
+          scale="2 2 2 "
+          gltf-model="models/jaguar.glb"
+        ></a-entity>
       </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
