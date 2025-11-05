@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Modelo AR</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene embedded arjs>
+      <a-marker preset="hiro">
+        <a-entity id="modelo" position="0 0 0" scale="1.5 1.5 1.5"></a-entity>
+      </a-marker>
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      // Obtener el parámetro de la URL
+      const params = new URLSearchParams(window.location.search);
+      const modelo = params.get("modelo");
+
+      // Cargar el modelo en el marcador
+      if (modelo) {
+        const entidad = document.getElementById("modelo");
+        entidad.setAttribute("gltf-model", modelo);
+      }
+    </script>
+  </body>
+</html>
